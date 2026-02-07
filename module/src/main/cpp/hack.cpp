@@ -18,7 +18,15 @@
 #include <linux/unistd.h>
 #include <array>
 
+// Global log file
+FILE *g_log_file = nullptr;
+
 void hack_start(const char *game_data_dir) {
+    // Initialize log file
+    init_log_file(game_data_dir);
+    
+    LOGI("=== IrrlichtDumper Started ===");
+    LOGI("Game data dir: %s", game_data_dir);
     LOGI("Starting Irrlicht engine detection...");
     
     bool irrlicht_found = false;
@@ -26,6 +34,8 @@ void hack_start(const char *game_data_dir) {
     
     // Wait for libraries to load
     for (int i = 0; i < 15; i++) {
+        LOGI("Checking libraries... attempt %d/15", i + 1);
+        
         // Check for Irrlicht
         void *irrlicht = xdl_open("libIrrlicht.so", 0);
         if (irrlicht && !irrlicht_found) {
@@ -57,6 +67,7 @@ void hack_start(const char *game_data_dir) {
     if (!irrlicht_found) {
         LOGE("✗ Irrlicht engine not found!");
         LOGI("This module is designed for Irrlicht-based games");
+        close_log_file();
         return;
     }
     
@@ -78,9 +89,13 @@ void hack_start(const char *game_data_dir) {
     LOGI("Dump completed! Check %s for results", game_data_dir);
     LOGI("Files generated:");
     LOGI("  - irrlicht_dump.txt: Engine and library information");
+    LOGI("  - module_log.txt: This log file");
     if (lua_found) {
         LOGI("  - lua_dump.lua: Lua environment dump");
     }
+    
+    LOGI("=== IrrlichtDumper Finished ===");
+    close_log_file();
 }
 
 std::string GetLibDir(JavaVM *vms) {
