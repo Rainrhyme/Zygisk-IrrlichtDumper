@@ -23,6 +23,7 @@ static void dump_symbols(FILE *file, const char *lib_name) {
     void *handle = xdl_open(lib_name, 0);
     if (!handle) {
         fprintf(file, "// Failed to open %s\n", lib_name);
+        LOGW("Failed to open %s for symbol dump", lib_name);
         return;
     }
     
@@ -30,22 +31,10 @@ static void dump_symbols(FILE *file, const char *lib_name) {
     fprintf(file, "// Library: %s\n", lib_name);
     fprintf(file, "// ========================================\n\n");
     
-    fprintf(file, "// Library handle: %p\n\n", handle);
+    fprintf(file, "// Library handle: %p\n", handle);
+    fprintf(file, "// Symbol lookup skipped to avoid anti-debug detection\n\n");
     
-    // Try to find common Irrlicht functions
-    const char *irrlicht_funcs[] = {
-        "createDevice",
-        "createDeviceEx",
-        "_ZN3irr12createDeviceENS_5video13E_DRIVER_TYPEERKNS_4core11dimension2dIiEEjbbbPNS_14IEventReceiverEPKc",
-        nullptr
-    };
-    
-    for (int i = 0; irrlicht_funcs[i] != nullptr; i++) {
-        void *sym = dlsym(handle, irrlicht_funcs[i]);
-        if (sym) {
-            fprintf(file, "// Found: %s at %p\n", irrlicht_funcs[i], sym);
-        }
-    }
+    LOGI("Dumped basic info for %s", lib_name);
 }
 
 void irrlicht_dump(const char *output_dir) {
