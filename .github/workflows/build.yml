@@ -27,14 +27,15 @@ jobs:
         sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
         
     - name: Build module
-      run: ./gradlew :module:assembleRelease
+      run: |
+        ./gradlew :module:assembleRelease
+        ./gradlew :module:prepareMagiskFilesRelease
       
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: zygisk-irrlichtdumper-${{ github.event.inputs.package_name }}
-        path: out/*.zip
-        compression-level: 0
+        path: out/magisk_module_release/
         
     - name: Display build info
       run: |
