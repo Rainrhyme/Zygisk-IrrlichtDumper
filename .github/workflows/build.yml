@@ -1,4 +1,4 @@
-name: Build IrrlichtDumper
+name: Build
 on:
   workflow_dispatch:
       inputs:
