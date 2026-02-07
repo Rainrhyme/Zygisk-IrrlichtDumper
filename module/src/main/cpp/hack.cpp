@@ -22,6 +22,10 @@
 FILE *g_log_file = nullptr;
 
 void hack_start(const char *game_data_dir) {
+    // 先等待一段时间，让游戏完全启动
+    LOGI("Module loaded, waiting 30 seconds before starting detection...");
+    sleep(30);
+    
     // Initialize log file
     init_log_file(game_data_dir);
     
