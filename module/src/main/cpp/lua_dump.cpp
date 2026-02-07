@@ -207,7 +207,7 @@ void lua_dump(const char *output_dir) {
         
         for (int i = 0; common_globals[i] != nullptr; i++) {
             lua_getglobal(L, common_globals[i]);
-            if (!lua_isnil(L, -1)) {
+            if (lua_type(L, -1) != LUA_TNIL) {
                 fprintf(dump_file, "%s = ", common_globals[i]);
                 dump_lua_value(dump_file, L, -1, 0, common_globals[i]);
                 fprintf(dump_file, "\n\n");
