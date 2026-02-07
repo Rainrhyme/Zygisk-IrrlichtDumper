@@ -31,6 +31,7 @@ void hack_start(const char *game_data_dir) {
     
     bool irrlicht_found = false;
     bool lua_found = false;
+    void *cegui_lua_handle = nullptr;
     
     // Wait for libraries to load
     for (int i = 0; i < 15; i++) {
@@ -43,12 +44,13 @@ void hack_start(const char *game_data_dir) {
             irrlicht_found = true;
         }
         
-        // Check for CEGUI Lua module
-        void *cegui_lua = xdl_open("libCEGUILuaScriptModule-0.so", 0);
-        if (cegui_lua && !lua_found) {
-            LOGI("✓ CEGUI Lua module detected");
-            lua_api_init(cegui_lua);
-            lua_found = true;
+        // Check for CEGUI Lua module (but don't init yet)
+        if (!lua_found) {
+            cegui_lua_handle = xdl_open("libCEGUILuaScriptModule-0.so", 0);
+            if (cegui_lua_handle) {
+                LOGI("✓ CEGUI Lua module detected");
+                lua_found = true;
+            }
         }
         
         if (irrlicht_found && lua_found) {
@@ -73,13 +75,23 @@ void hack_start(const char *game_data_dir) {
     LOGI("Starting dump process...");
     
     // Dump Irrlicht engine info
+    LOGI("Dumping Irrlicht information...");
     irrlicht_dump(game_data_dir);
+    LOGI("Irrlicht dump completed");
     
     // Dump Lua if available
-    if (lua_found) {
+    if (lua_found && cegui_lua_handle) {
+        LOGI("Initializing Lua API...");
+        lua_api_init(cegui_lua_handle);
+        LOGI("Lua API initialized");
+        
         // Wait a bit more for Lua to initialize
+        LOGI("Waiting for Lua to fully initialize...");
         sleep(3);
+        
+        LOGI("Dumping Lua information...");
         lua_dump(game_data_dir);
+        LOGI("Lua dump completed");
     } else {
         LOGW("Lua module not found, skipping Lua dump");
     }
