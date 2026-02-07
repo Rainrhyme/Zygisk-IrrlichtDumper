@@ -51,18 +51,16 @@ void hack_start(const char *game_data_dir) {
             lua_found = true;
         }
         
-        // Check for game library
-        void *yworld = xdl_open("libyworld.so", 0);
-        if (yworld) {
-            LOGI("✓ Game library (libyworld.so) detected");
-        }
-        
         if (irrlicht_found && lua_found) {
+            LOGI("All required libraries detected, breaking loop");
             break;
         }
         
         sleep(1);
     }
+    
+    LOGI("Library detection completed. Irrlicht: %s, Lua: %s", 
+         irrlicht_found ? "YES" : "NO", lua_found ? "YES" : "NO");
     
     if (!irrlicht_found) {
         LOGE("✗ Irrlicht engine not found!");
