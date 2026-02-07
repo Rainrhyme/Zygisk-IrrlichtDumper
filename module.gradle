@@ -1,0 +1,9 @@
+ext {
+    moduleLibraryName = "irrlichtdumper"
+    magiskModuleId = "zygisk_irrlichtdumper"
+    moduleName = "IrrlichtDumper"
+    moduleAuthor = "Modified for Irrlicht"
+    moduleDescription = "Irrlicht Engine + Lua dumper for Zygisk."
+    moduleVersion = "v2.0.0"
+    moduleVersionCode = 2
+}
