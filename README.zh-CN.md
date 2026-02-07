@@ -10,13 +10,6 @@
 - **脚本语言**: Lua (通过 CEGUI Lua 模块)
 - **游戏逻辑**: C++ Native 代码
 
-### 如何判断游戏是否适用
-
-检查游戏 APK 的 `lib/` 目录是否包含：
-- `libIrrlicht.so` - Irrlicht 引擎核心
-- `libCEGUIBase-0.so` - CEGUI UI 系统
-- `libCEGUILuaScriptModule-0.so` - Lua 脚本支持
-
 ## 功能特性
 
 - ✅ 自动检测 Irrlicht 引擎
@@ -110,80 +103,6 @@ Starting dump process...
 Dump completed!
 ```
 
-## 逆向工程指南
-
-### 1. Lua 脚本分析
-
-#### 提取 Lua 文件
-```bash
-# 拉取 APK
-adb pull /data/app/*/base.apk
-
-# 解压
-unzip base.apk
-
-# 查找 Lua 文件
-find assets -name "*.lua" -o -name "*.luac"
-```
-
-#### 反编译 Lua 字节码
-```bash
-# 使用 unluac
-java -jar unluac.jar script.luac > script.lua
-
-# 或使用 luadec
-luadec script.luac
-```
-
-### 2. Native 代码分析
-
-#### 使用 IDA Pro
-1. 加载游戏的主逻辑库（如 `libyworld.so`）
-2. 查找 Lua 注册函数：
-   - `lua_register`
-   - `luaL_register`
-   - `luaL_newmetatable`
-3. 分析游戏逻辑函数
-
-#### 使用 Ghidra
-1. 导入 `libyworld.so`
-2. 自动分析
-3. 搜索字符串引用找到关键函数
-
-### 3. 内存修改
-
-#### Hook Lua 函数
-使用 Frida 或 Xposed 框架：
-```javascript
-// Frida 示例
-Interceptor.attach(Module.findExportByName("libCEGUILuaScriptModule-0.so", "lua_getglobal"), {
-    onEnter: function(args) {
-        console.log("lua_getglobal called:", Memory.readUtf8String(args[1]));
-    }
-});
-```
-
-#### 修改 Lua 全局变量
-```lua
--- 注入自定义 Lua 代码
-Player.health = 9999
-Player.gold = 999999
-```
-
-### 4. 资源提取
-
-#### CEGUI 布局文件
-```bash
-# 查找 XML 布局
-find assets -name "*.layout" -o -name "*.scheme"
-```
-
-#### Irrlicht 场景文件
-```bash
-# 查找场景文件
-find assets -name "*.irr" -o -name "*.xml"
-```
-
 ## 常见问题
 
 ### Q: 模块没有生成输出文件？
@@ -211,35 +130,6 @@ adb shell pm list packages
 A: 支持，包括：
 - x86/x64 模拟器运行 ARM 游戏（通过 Houdini/NativeBridge）
 - ARM 模拟器
-
-## 技术细节
-
-### 检测流程
-```
-游戏启动
-    ↓
-Zygisk 注入
-    ↓
-等待库加载（最多 15 秒）
-    ↓
-检测 libIrrlicht.so
-    ↓
-检测 libCEGUILuaScriptModule-0.so
-    ↓
-检测 libyworld.so（游戏逻辑）
-    ↓
-执行 Irrlicht dump
-    ↓
-执行 Lua dump
-    ↓
-生成报告文件
-```
-
-### 架构支持
-- ✅ armeabi-v7a (32-bit ARM)
-- ✅ arm64-v8a (64-bit ARM)
-- ✅ x86 (通过 NativeBridge)
-- ✅ x86_64 (通过 NativeBridge)
 
 ## 贡献
 
