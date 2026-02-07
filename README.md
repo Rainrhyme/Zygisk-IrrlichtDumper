@@ -10,13 +10,6 @@ This module is designed for games using:
 - **Scripting**: Lua (via CEGUI Lua module)
 - **Game Logic**: C++ Native code
 
-### How to Check Compatibility
-
-Check if your game's APK `lib/` directory contains:
-- `libIrrlicht.so` - Irrlicht engine core
-- `libCEGUIBase-0.so` - CEGUI UI system
-- `libCEGUILuaScriptModule-0.so` - Lua script support
-
 ## Features
 
 - ✅ Auto-detect Irrlicht engine
@@ -110,80 +103,6 @@ Starting dump process...
 Dump completed!
 ```
 
-## Reverse Engineering Guide
-
-### 1. Lua Script Analysis
-
-#### Extract Lua Files
-```bash
-# Pull APK
-adb pull /data/app/*/base.apk
-
-# Extract
-unzip base.apk
-
-# Find Lua files
-find assets -name "*.lua" -o -name "*.luac"
-```
-
-#### Decompile Lua Bytecode
-```bash
-# Using unluac
-java -jar unluac.jar script.luac > script.lua
-
-# Or using luadec
-luadec script.luac
-```
-
-### 2. Native Code Analysis
-
-#### Using IDA Pro
-1. Load game's main library (e.g., `libyworld.so`)
-2. Find Lua registration functions:
-   - `lua_register`
-   - `luaL_register`
-   - `luaL_newmetatable`
-3. Analyze game logic functions
-
-#### Using Ghidra
-1. Import `libyworld.so`
-2. Auto-analyze
-3. Search string references for key functions
-
-### 3. Memory Modification
-
-#### Hook Lua Functions
-Using Frida or Xposed:
-```javascript
-// Frida example
-Interceptor.attach(Module.findExportByName("libCEGUILuaScriptModule-0.so", "lua_getglobal"), {
-    onEnter: function(args) {
-        console.log("lua_getglobal called:", Memory.readUtf8String(args[1]));
-    }
-});
-```
-
-#### Modify Lua Globals
-```lua
--- Inject custom Lua code
-Player.health = 9999
-Player.gold = 999999
-```
-
-### 4. Resource Extraction
-
-#### CEGUI Layouts
-```bash
-# Find XML layouts
-find assets -name "*.layout" -o -name "*.scheme"
-```
-
-#### Irrlicht Scenes
-```bash
-# Find scene files
-find assets -name "*.irr" -o -name "*.xml"
-```
-
 ## FAQ
 
 ### Q: Module doesn't generate output files?
@@ -212,35 +131,6 @@ A: Yes, including:
 - x86/x64 emulators running ARM games (via Houdini/NativeBridge)
 - ARM emulators
 
-## Technical Details
-
-### Detection Flow
-```
-Game Launch
-    ↓
-Zygisk Injection
-    ↓
-Wait for Libraries (max 15s)
-    ↓
-Detect libIrrlicht.so
-    ↓
-Detect libCEGUILuaScriptModule-0.so
-    ↓
-Detect libyworld.so (game logic)
-    ↓
-Execute Irrlicht dump
-    ↓
-Execute Lua dump
-    ↓
-Generate reports
-```
-
-### Architecture Support
-- ✅ armeabi-v7a (32-bit ARM)
-- ✅ arm64-v8a (64-bit ARM)
-- ✅ x86 (via NativeBridge)
-- ✅ x86_64 (via NativeBridge)
-
 ## Contributing
 
 Issues and Pull Requests are welcome!
@@ -248,6 +138,10 @@ Issues and Pull Requests are welcome!
 ## License
 
 Modified from [Zygisk-Il2CppDumper](https://github.com/Perfare/Zygisk-Il2CppDumper)
+
+## Disclaimer
+
+This tool is for educational and research purposes only. Do not use for illegal activities. Users are responsible for any consequences.
 
 ## Disclaimer
 
