@@ -81,11 +81,16 @@ void hack_start(const char *game_data_dir) {
     
     // Dump Lua if available
     if (lua_found && cegui_lua_handle) {
+        LOGI("Lua module detected");
+        LOGI("Waiting 60 seconds for game to fully start before Lua dump...");
+        LOGI("Please wait patiently, the game should be playable during this time");
+        sleep(60);  // 等待游戏完全启动，反调试检查完成
+        
+        LOGI("Starting Lua dump process...");
         LOGI("Initializing Lua API...");
         lua_api_init(cegui_lua_handle);
         LOGI("Lua API initialized");
         
-        // Wait a bit more for Lua to initialize
         LOGI("Waiting for Lua to fully initialize...");
         sleep(3);
         
