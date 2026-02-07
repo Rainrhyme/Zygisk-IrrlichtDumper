@@ -33,7 +33,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: zygisk-irrlichtdumper-${{ github.event.inputs.package_name }}
-        path: out/magisk_module_release/*.zip
+        path: out/*.zip
         compression-level: 0
         
     - name: Display build info
