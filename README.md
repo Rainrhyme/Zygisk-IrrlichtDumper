@@ -143,6 +143,3 @@ Modified from [Zygisk-Il2CppDumper](https://github.com/Perfare/Zygisk-Il2CppDump
 
 This tool is for educational and research purposes only. Do not use for illegal activities. Users are responsible for any consequences.
 
-## Disclaimer
-
-This tool is for educational and research purposes only. Do not use for illegal activities. Users are responsible for any consequences.
