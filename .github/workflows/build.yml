@@ -1,0 +1,43 @@
+name: Build IrrlichtDumper
+on:
+  workflow_dispatch:
+      inputs:
+        package_name:
+          description: "Package name of the game (e.g., com.example.game):"
+          required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: 11
+        cache: gradle
+        
+    - name: Configure game package
+      run: |
+        chmod +x ./gradlew
+        sed -i 's/moduleDescription = "/moduleDescription = "(${{ github.event.inputs.package_name }}) /g' module.gradle
+        sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
+        
+    - name: Build module
+      run: ./gradlew :module:assembleRelease
+      
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: zygisk-irrlichtdumper-${{ github.event.inputs.package_name }}
+        path: out/*.zip
+        
+    - name: Display build info
+      run: |
+        echo "✅ Build completed!"
+        echo "📦 Package: ${{ github.event.inputs.package_name }}"
+        echo "📁 Output files:"
+        ls -lh out/
